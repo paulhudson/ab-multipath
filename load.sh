@@ -1,3 +1,4 @@
+#!/bin/bash
  
 if ! [ -x "$(type -P ab)" ]; then
   echo "ERROR: script requires apache bench"
@@ -49,6 +50,7 @@ for run in $(seq 1 $runs); do
     echo -e " Requests per second: \t $(grep "^Requests per second" $log | tail -1 | awk '{print$4}') reqs/sec"
     echo -e " Failed requests: \t $(grep "^Failed requests" $log | tail -1 | awk '{print$3}')"
     echo -e " Write errors: \t\t $(grep "^Write errors" $log | tail -1 | awk '{print$3}')"
+    echo -e " Non-2xx: \t\t $(grep "^Non-2xx responses" $log | tail -1 | awk '{print$3}')"
     echo -e " Transfer rate: \t $(grep "^Transfer rate" $log | tail -1 | awk '{print$3}')"
   done
 done
