@@ -19,6 +19,8 @@ Example:
 The above will send 100 GET requests (50 at a time) to http://giantdorks.org. The test will be repeated 10 times.
 
 ### @todo
+
+* add run start time so it's easy to trace back in logs and newrelic 
 * make paths configurable, currently hardcoded in for loop
 * more useful output?
 * quick benchtesting tips in readme?
