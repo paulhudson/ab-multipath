@@ -7,7 +7,7 @@ if ! [ -x "$(type -P ab)" ]; then
   exit 1
 fi
  
-if [ "$#" -ne "4" ]; then
+if [ "$#" -ne "5" ]; then
   echo "ERROR: script needs four arguments, where:"
   echo
   echo "1. Number of times to repeat test (e.g. 10)"
