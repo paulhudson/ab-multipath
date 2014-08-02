@@ -33,8 +33,8 @@ fi
 NEW_RELIC_API_KEY="7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac"
 NEWRELIC_APP_ID="4766364"
 
-curl -s -H "x-api-key:$NEW_RELIC_API_KEY" -d "loadtest[application_id]=$NEWRELIC_APP_ID" -d "loadtest[description]=Load test $site with $runs runs of -n $number -c $concurrency" -d "loadtest[user]=Load Test" https://api.newrelic.com/deployments.xml > /dev/null
-
+curl -s -H "x-api-key:$NEW_RELIC_API_KEY" -d "deployment[application_id]=$NEWRELIC_APP_ID" -d "deployment[description]=Load test $site with $runs runs of -n $number -c $concurrency" -d "deployment[user]=Load Test" https://api.newrelic.com/deployments.xml > /dev/null
+#curl -s -H "x-api-key:7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac" -d "deployment[application_id]=4766364" -d "deployment[description]=Load test site with 1 runs of -n 1x -c 1x" -d "deployment[user]=Load Test" https://api.newrelic.com/deployments.xml
  
 log=ab.$(echo $site | sed -r 's|https?://||;s|/$||;s|/|_|g;').log
  
