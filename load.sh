@@ -43,7 +43,7 @@ echo " concurrency ... $concurrency"
 echo "------------------------------------------------------------------"
  
 for run in $(seq 1 $runs); do
-  for path in / /insurance /ctp-insurance /help-information/policy-booklets /claims /payments; do
+  for path in /branches/feed; do
     echo 'Load testing '$path
     ab -c$concurrency -n$number $site$path >> $log
     echo " run $run:"
