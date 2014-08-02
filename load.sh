@@ -30,7 +30,7 @@ else
 fi
 
 # Report test start event to newrelic.com
-NEWRELIC_APP_ID="7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac"
+NEW_RELIC_API_KEY="7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac"
 NEWRELIC_APP_ID="4766364"
 
 curl -s -H "x-api-key:$NEW_RELIC_API_KEY" -d "loadtest[application_id]=$NEWRELIC_APP_ID" -d "loadtest[description]=Load test $site with $runs runs of -n $number -c $concurrency" -d "loadtest[user]=Load Test" https://api.newrelic.com/deployments.xml > /dev/null
