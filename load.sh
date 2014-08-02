@@ -43,11 +43,15 @@ echo " site .......... $site"
 echo " requests ...... $number"
 echo " concurrency ... $concurrency"
 echo "------------------------------------------------------------------"
- 
-for run in $(seq 1 $runs); do
-  while read path; do 
 
-  #for path in /branches/feed; do
+#while read line; do
+#  paths="$paths $line"
+#done < $file
+
+for run in $(seq 1 $runs); do
+  #for path in $paths; do
+  while read path; do
+  #for path in / /js/iag_branch_locator/getgeo /iag_quotes/start /self-service-centre /claims /payments /contact-us /contact-us/branch /motorcycle-insurance /faq /help-information /insurance /home-insurance /home-buildings-insurance /quote-exit/ctp-insurance; do
     echo 'Load testing '$site$path
     ab -c$concurrency -n$number $site$path >> $log
     echo " run $run:"
@@ -56,15 +60,17 @@ for run in $(seq 1 $runs); do
     echo -e " Write errors: \t\t $(grep "^Write errors" $log | tail -1 | awk '{print$3}')"
     echo -e " Non-2xx: \t\t $(grep "^Non-2xx responses" $log | tail -1 | awk '{print$3}')"
     echo -e " Transfer rate: \t $(grep "^Transfer rate" $log | tail -1 | awk '{print$3}')"
-  #done
-  done < FILE
+
+  done < $file
 done
  
 avg=$(awk -v runs=$runs '/^Requests per second/ {avgsum+=$4; avg=avgsum/runs} END {print avg}' $log)
-fail=$(awk -v runs=$runs '/^Failed requests/ {failsum+=$4; fail=failsum/runs} END {print fail}' $log) 
+fail=$(awk -v runs=$runs '/^Failed requests/ {failsum+=$3; fail=failsum} END {print fail}' $log) 
+non2xx=$(awk -v runs=$runs '/^Non-2xx responses/ {non2xxsum+=$3; non2xx=non2xxsum} END {print non2xx}' $log)
 
 echo "------------------------------------------------------------------"
 echo " average ....... $avg requests/sec"
-echo " total fails ... $fail Failed requests"
+echo " total ......... $fail Failed requests"
+echo " total ......... $non2xx Non-2xx responses"
 echo
 echo "see $log for details"
