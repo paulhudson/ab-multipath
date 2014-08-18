@@ -1,6 +1,7 @@
 /
 /index.php?q=themekey/redirect_callback/
-/js/iag_branch_locator/getgeo
+/themekey/redirect_callback
+/js/iag_branch_locator/getgeo?ip=54.252.112.140
 /self-service-centre
 /claims
 /payments
