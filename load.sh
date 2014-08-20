@@ -19,7 +19,8 @@ if [ "$#" -ne "5" ]; then
   echo "Example:"
   echo "  $(basename $0) 10 100 50 http://giantdorks.org ./test_paths"
   echo 
-  echo "The above will send 100 GET requests (50 at a time) to http://giantdorks.org for each path in test_paths. The test will be repeated 10 times."
+  echo "The above will send 100 GET requests (50 at a time) to http://giantdorks.org for each path in test_paths. The test will be repeated 
+10 times."
   exit 1
 else
   runs=$1
@@ -31,13 +32,14 @@ fi
 
 # Report test start event to newrelic.com
 NEW_RELIC_API_KEY="7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac"
+# RS Preview
 NEWRELIC_APP_ID="4766364"
+# HW Load
+# NEWRELIC_APP_ID="4673661"
 
 curl -s -H "x-api-key:$NEW_RELIC_API_KEY" -d "deployment[application_id]=$NEWRELIC_APP_ID" -d "deployment[description]=Load test $site with $runs runs of -n $number -c $concurrency" -d "deployment[user]=Load Test" https://api.newrelic.com/deployments.xml > /dev/null
 #curl -s -H "x-api-key:7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac" -d "deployment[application_id]=4766364" -d "deployment[description]=Load test site with 1 runs of -n 1x -c 1x" -d "deployment[user]=Load Test" https://api.newrelic.com/deployments.xml
- 
-log=ab.$(echo $site | sed -r 's|https?://||;s|/$||;s|/|_|g;').log
- 
+  
 if [ -f $log ]; then
   echo removing $log
   rm $log
@@ -51,16 +53,15 @@ echo " requests ...... $number"
 echo " concurrency ... $concurrency"
 echo "------------------------------------------------------------------"
 
-#while read line; do
-#  paths="$paths $line"
-#done < $file
+globallog=ab.$(echo $site | sed -r 's|https?://||;s|/$||;s|/|_|g;').log
 
 for run in $(seq 1 $runs); do
-  #for path in $paths; do
   while read path; do
-  #for path in / /js/iag_branch_locator/getgeo /iag_quotes/start /self-service-centre /claims /payments /contact-us /contact-us/branch /motorcycle-insurance /faq /help-information /insurance /home-insurance /home-buildings-insurance /quote-exit/ctp-insurance; do
+
+    log=ab.$(echo $site$path | sed -r 's|https?://||;s|/$||;s|/|_|g;').log
+
     echo 'Load testing '$site$path
-    ab -c$concurrency -n$number $site$path >> $log
+    ab -c$concurrency -n$number $site$path | tee -a $log $globallog > /dev/null
     echo " run $run:"
     echo -e " Requests per second: \t $(grep "^Requests per second" $log | tail -1 | awk '{print$4}') reqs/sec"
     echo -e " Failed requests: \t $(grep "^Failed requests" $log | tail -1 | awk '{print$3}')"
@@ -71,13 +72,15 @@ for run in $(seq 1 $runs); do
   done < $file
 done
  
-avg=$(awk -v runs=$runs '/^Requests per second/ {avgsum+=$4; avg=avgsum/runs} END {print avg}' $log)
-fail=$(awk -v runs=$runs '/^Failed requests/ {failsum+=$3; fail=failsum} END {print fail}' $log) 
-non2xx=$(awk -v runs=$runs '/^Non-2xx responses/ {non2xxsum+=$3; non2xx=non2xxsum} END {print non2xx}' $log)
+avg=$(awk -v runs=$runs '/^Requests per second/ {avgsum+=$4; avg=avgsum/runs} END {print avg}' $globallog)
+fail=$(awk -v runs=$runs '/^Failed requests/ {failsum+=$3; fail=failsum} END {print fail}' $globallog) 
+non2xx=$(awk -v runs=$runs '/^Non-2xx responses/ {non2xxsum+=$3; non2xx=non2xxsum} END {print non2xx}' $globallog)
 
 echo "------------------------------------------------------------------"
 echo " average ....... $avg requests/sec"
 echo " total ......... $fail Failed requests"
 echo " total ......... $non2xx Non-2xx responses"
 echo
-echo "see $log for details"
+echo "see $globallog for details"
+
+
