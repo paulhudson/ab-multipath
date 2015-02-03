@@ -31,14 +31,10 @@ else
 fi
 
 # Report test start event to newrelic.com
-#NEW_RELIC_API_KEY="7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac"
-# RS Preview
-#NEWRELIC_APP_ID="4766364"
-# HW Load
-# NEWRELIC_APP_ID="4673661"
+#NEW_RELIC_API_KEY=""
+#NEWRELIC_APP_ID=""
 
 #curl -s -H "x-api-key:$NEW_RELIC_API_KEY" -d "deployment[application_id]=$NEWRELIC_APP_ID" -d "deployment[description]=Load test $site with $runs runs of -n $number -c $concurrency" -d "deployment[user]=Load Test" https://api.newrelic.com/deployments.xml > /dev/null
-#curl -s -H "x-api-key:7d78436d33a8106364ef06556bfb6ebd78361dc4ce2afac" -d "deployment[application_id]=4766364" -d "deployment[description]=Load test site with 1 runs of -n 1x -c 1x" -d "deployment[user]=Load Test" https://api.newrelic.com/deployments.xml
   
 if [ -f $log ]; then
   echo removing $log
@@ -64,7 +60,7 @@ for run in $(seq 1 $runs); do
     log=ab.$(echo $site$path | sed 's|https?://||;s|/$||;s|/|_|g;').log
 
     echo 'Load testing '$site$path
-    ab -c$concurrency -n$number $site$path | tee -a $log $globallog > /dev/null
+    ab -H 'Cache-Control: no-cache' -c $concurrency -n $number $site$path | tee -a $log $globallog > /dev/null
     echo " run $run:"
     echo -e " Requests per second: \t $(grep "^Requests per second" $log | tail -1 | awk '{print$4}') reqs/sec"
     echo -e " Failed requests: \t $(grep "^Failed requests" $log | tail -1 | awk '{print$3}')"
